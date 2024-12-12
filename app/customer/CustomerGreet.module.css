@@ -1,0 +1,53 @@
+.main-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.pandaLogo {
+  width: 30rem;
+  height: auto;
+  user-select: none;
+  pointer-events: none;
+  margin-bottom: 5rem;
+}
+
+.menu-button {
+  border: none;
+  background-color: #1d1e21;
+  color: #ffcbb4;
+  width: 12rem;
+  border-radius: 5px;
+  padding: 20px 20px;
+  margin-bottom: 2.5rem;
+  cursor: pointer;
+  text-align: center;
+}
+
+.menu-button:hover {
+  background-color: #ffcbb5;
+  color: #1d1e21;
+}
+
+.brightnessSliderContainer {
+  margin: 20px auto;
+  text-align: center;
+}
+
+.brightnessSlider {
+  width: 80%;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: auto;
+  width: 100%;
+}
+
+.main-content::-webkit-scrollbar {
+  display: none;
+}

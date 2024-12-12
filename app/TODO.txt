@@ -1,0 +1,14 @@
+Modularize Manager into different pages for better code  organization
+
+Manager employee view:
+  - need menu_inven data query
+  - need other apis done
+  - i want to create a file in the lib folder that can do special/more complicated queries -> oscar
+  - add ability to delete employee ----- added delete function in employee -> oscar
+
+Complete other views of Manager
+
+Fix customer order screen navigation and item displays
+
+Add Google Login api
+TTS Feature

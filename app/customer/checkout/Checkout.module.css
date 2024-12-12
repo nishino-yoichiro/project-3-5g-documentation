@@ -1,0 +1,156 @@
+.checkoutContainer {
+    padding: 20px;
+    max-width: 90%; /* Adjust width for better fit on smaller screens */
+    margin: 0 auto;
+    font-family: Arial, sans-serif;
+    background-color: #f8f8f8;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    min-height: 80vh; /* Ensure the container takes up most of the vertical space */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Ensures proper spacing between elements */
+}
+
+@media (min-width: 768px) {
+    .checkoutContainer {
+        max-width: 900px; /* Keep original max width for larger screens */
+    }
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.mainHeader {
+    display: flex;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.mainImage {
+    max-width: 150px;
+    height: auto;
+    border-radius: 4px;
+    margin-right: 15px;
+}
+
+.mainDetails {
+    flex: 1;
+}
+
+.mainTitle {
+    font-size: 24px;
+    margin: 0 0 5px;
+    font-weight: bold;
+}
+
+.mainDescription {
+    margin: 5px 0;
+    color: #555;
+    font-size: 16px;
+}
+
+.mainPrice {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.supportingContainer {
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+.supportingItem {
+    display: flex;
+    align-items: flex-start;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.supportingItem:last-child {
+    border-bottom: none;
+}
+
+.supportingImage {
+    max-width: 60px;
+    height: auto;
+    border-radius: 4px;
+    margin-right: 15px;
+}
+
+.supportingDetails {
+    flex: 1;
+}
+
+.supportingTitle {
+    font-size: 18px;
+    margin: 0 0 5px;
+    font-weight: bold;
+}
+
+.supportingDescription {
+    margin: 0;
+    color: #555;
+    font-size: 14px;
+}
+
+.supportingPrice {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
+.proceedButton,
+.orderMoreButton {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    color: white;
+    background-color: #b22222;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    margin-top: 20px;
+}
+
+.proceedButton:hover,
+.orderMoreButton:hover {
+    background-color: #4f0b0b;
+}
+
+.orderMoreButton {
+    background-color: #000000;
+}
+
+.orderMoreButton:hover {
+    background-color: #b22222;
+}
+
+.brightnessControl {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.brightnessControl label {
+    margin-right: 10px;
+    font-size: 16px;
+    color: #555;
+}
+
+#brightness-slider {
+    width: 200px;
+    cursor: pointer;
+}

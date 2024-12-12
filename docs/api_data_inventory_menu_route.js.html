@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: api/data/inventory_menu/route.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: api/data/inventory_menu/route.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>// app/api/data/menu_items/route.js
+import { NextResponse } from 'next/server';
+import pool from '../../../../lib/db';
+
+/**
+ * Handles the GET request to fetch all menu items.
+ * 
+ * @returns {Promise&lt;NextResponse>} - A promise that resolves to a NextResponse object containing all menu items in JSON format.
+ */
+export async function GET() {
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT * FROM inventory_menu ORDER BY menu_id ASC');
+    client.release();
+    return NextResponse.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching menu items from database:', err);
+    return NextResponse.json({ error: 'Failed to fetch menu items' }, { status: 500 });
+  }
+}
+
+/**
+ * Handles the PUT request to update an existing menu item in the inventory_menu table.
+ * The menu item is updated with the provided menu ID, inventory name, and inventory ID.
+ * 
+ * @param {Request} req - The incoming request object containing the menu item details.
+ * @returns {Promise&lt;NextResponse>} - A promise that resolves to a NextResponse object indicating the success of the update operation.
+ */
+export async function PUT(req) {
+  try {
+    const { menu_id, inventory_name, inventory_id } = await req.json();
+    const client = await pool.connect();
+    const result = await client.query(
+      'UPDATE inventory_menu SET inventory_name = $1, inventory_id = $2 WHERE menu_id = $3',
+      [inventory_name, inventory_id, menu_id]
+    );
+    client.release();
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Error updating menu item in database:', err);
+    return NextResponse.json({ error: 'Failed to update menu item' }, { status: 500 });
+  }
+}
+
+// app/api/data/menu_items/route.js
+
+/**
+ * Handles the POST request to add a new menu item to the inventory_menu table.
+ * The new menu item is added with the provided inventory name, menu ID, and inventory ID.
+ * The added menu item is returned in the response.
+ * 
+ * @param {Request} req - The incoming request object containing the menu item details.
+ * @returns {Promise&lt;NextResponse>} - A promise that resolves to a NextResponse object containing the added menu item data in JSON format.
+ */
+export async function POST(req) {
+  try {
+    const { inventory_name, menu_id, inventory_id } = await req.json();
+    console.log('Received data for new menu item:', { inventory_name, menu_id, inventory_id });
+
+    const client = await pool.connect();
+    console.log('Database connection established');
+
+    const query = 'INSERT INTO inventory_menu (inventory_name, menu_id, inventory_id) VALUES ($1, $2, $3) RETURNING *';
+    const values = [inventory_name, menu_id, inventory_id];
+    console.log('Executing query:', query, 'with values:', values);
+
+    const result = await client.query(query, values);
+    client.release();
+    console.log('New menu item added:', result.rows[0]);
+
+    return NextResponse.json(result.rows[0]);
+  } catch (err) {
+    console.error('Error adding new menu item to database:', err);
+    return NextResponse.json({ error: 'Failed to add new menu item' }, { status: 500 });
+  }
+}
+
+/**
+ * Handles the DELETE request to delete an existing menu item from the inventory_menu table.
+ * The menu item is deleted based on the provided menu ID and inventory ID.
+ * 
+ * @param {Request} req - The incoming request object containing the menu ID and inventory ID.
+ * @returns {Promise&lt;NextResponse>} - A promise that resolves to a NextResponse object indicating the success of the delete operation.
+ */
+export async function DELETE(req) {
+  try {
+    const { menu_id, inventory_id } = await req.json();
+    const client = await pool.connect();
+    const result = await client.query('DELETE FROM inventory_menu WHERE menu_id = $1 AND inventory_id = $2', [menu_id, inventory_id]);
+    client.release();
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    console.error('Error deleting menu item from database:', err);
+    return NextResponse.json({ error: 'Failed to delete menu item' }, { status: 500 });
+  }
+}</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#CashierView">CashierView</a></li><li><a href="global.html#Checkout">Checkout</a></li><li><a href="global.html#DELETE">DELETE</a></li><li><a href="global.html#EmployeeView">EmployeeView</a></li><li><a href="global.html#GET">GET</a></li><li><a href="global.html#GoogleTranslate">GoogleTranslate</a></li><li><a href="global.html#InventoryView">InventoryView</a></li><li><a href="global.html#Items">Items</a></li><li><a href="global.html#LandingPage">LandingPage</a></li><li><a href="global.html#Manager">Manager</a></li><li><a href="global.html#MealSelection">MealSelection</a></li><li><a href="global.html#MenuBoard">MenuBoard</a></li><li><a href="global.html#MenuView">MenuView</a></li><li><a href="global.html#Modal">Modal</a></li><li><a href="global.html#NavBar">NavBar</a></li><li><a href="global.html#Navbar">Navbar</a></li><li><a href="global.html#NutritionalInfo">NutritionalInfo</a></li><li><a href="global.html#POST">POST</a></li><li><a href="global.html#PUT">PUT</a></li><li><a href="global.html#Payment">Payment</a></li><li><a href="global.html#ReportView">ReportView</a></li><li><a href="global.html#ReviewForm">ReviewForm</a></li><li><a href="global.html#SelectedItemsProvider">SelectedItemsProvider</a></li><li><a href="global.html#TTSProvider">TTSProvider</a></li><li><a href="global.html#WeatherComponent">WeatherComponent</a></li><li><a href="global.html#WeatherToday">WeatherToday</a></li><li><a href="global.html#handler">handler</a></li><li><a href="global.html#languages">languages</a></li><li><a href="global.html#useSelectedItems">useSelectedItems</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Dec 11 2024 18:12:26 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

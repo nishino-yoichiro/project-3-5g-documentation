@@ -1,0 +1,161 @@
+.paymentContainer {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 40px;
+    margin: 20px auto;
+    max-width: 1200px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    flex-wrap: wrap;
+}
+
+.paymentForm, .checkoutSummary {
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: 20px;
+}
+
+.paymentForm {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+}
+
+.formGroup {
+    margin-bottom: 15px;
+}
+
+.formGroup label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.formGroup input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.buttonsContainer {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.backButton, .finishButton, .brightnessSliderContainer {
+    width: 45%;
+}
+
+.backButton {
+    padding: 10px 20px;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.6);
+    background-color: #FF6961;
+    color: white;
+}
+
+.finishButton {
+    padding: 10px 20px;
+    font-size: 1.2em;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.6);
+    background-color: #4CAF50;
+    color: white;
+}
+
+.checkoutSummary {
+    padding: 20px 40px;
+    border-radius: 5px;
+    box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+    width: 100%;
+    margin: 20px auto;
+    border-radius: 8px;
+}
+
+.checkoutSummary h2 {
+    margin-bottom: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.checkoutItems {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.checkoutItem {
+    margin-bottom: 20px;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.checkoutItem div {
+    margin-bottom: 5px;
+}
+
+.reviewList {
+    list-style-type: none;
+    padding: 0;
+}
+
+.reviewItem {
+    margin-bottom: 10px;
+}
+
+.brightnessSliderContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.brightnessSlider {
+    width: 150px;
+    cursor: pointer;
+}
+
+.pageWrapper {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: transparent;
+    padding: 20px;
+}
+
+.modal {
+    max-height: 33vh;
+    overflow-y: auto;
+    background-color: black;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.button {
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}

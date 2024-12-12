@@ -1,0 +1,176 @@
+/* manager.module.css */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; /* Full viewport height */
+  background-color: rgb(193, 39, 39);
+}
+
+.manager {
+  text-align: center;
+}
+
+.tabNav {
+  display: flex;
+  justify-content: space-around;
+  background-color: #a7000093;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.tabNav button {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.tabNav button:hover {
+  background-color: #ddd;
+  border-radius: 5px;
+  color: black;
+}
+
+.viewContainer {
+  flex-grow: 1; /* Take up remaining space */
+  border: 1px solid #ddd;
+  padding: 20px;
+  overflow-y: auto; /* Enable scrolling if content overflows */
+}
+
+.view {
+  text-align: left;
+}
+
+.view input {
+  display: block;
+  margin: 10px 0;
+  padding: 5px;
+  width: 80%;
+  color: black;
+}
+
+.view button {
+  margin: 5px;
+  padding: 5px 10px;
+}
+
+.chart {
+  margin-top: 20px;
+  padding: 20px;
+  border: 1px dashed #333;
+  text-align: center;
+}
+
+.employeeList {
+  margin-top: 20px;
+}
+
+.employeeList ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.employeeList li {
+  margin-bottom: 10px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  color: black;
+}
+
+.table button:hover {
+  background-color:#ddd;
+  border-radius: 5px;
+}
+
+.table th, .table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.table th {
+  background-color: #f2f2f2;
+  text-align: left;
+}
+
+.newEmployeeForm {
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: black;
+}
+
+.newEmployeeForm input {
+  flex: 1 1 200px;
+  padding: 5px;
+  color: black;
+}
+
+.newEmployeeForm button {
+  flex: 1 1 100px;
+  padding: 10px;
+  background-color: #c92827;
+  border-radius: 10px;
+}
+
+.newEmployeeForm button:hover {
+  background-color: #aa2322;
+}
+
+.bottonButtons{
+  border: 2px solid black;
+  cursor: pointer;
+}
+
+.popUp, .overlay {
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  position: fixed;
+}
+
+.overlay {
+  background: rgba(49,49,49,0.6);
+}
+.popUpContent {
+  position: absolute;
+  align-items: center;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  line-height: 1.4;
+  background: #f5f5f5;
+  padding: 14px 28px;
+  border-radius: 3px;
+  width: 500px;
+  height: auto;
+}
+
+.close_popUp {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 12px;
+  cursor: pointer;
+  height: 25px;
+  width: 25px;
+  background-color: #f5f5f5;
+}
+
+.head2{
+  color: white;
+}
+
+.head3{
+  color: white;
+}

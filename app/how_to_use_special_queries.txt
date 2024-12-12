@@ -1,0 +1,85 @@
+TOTAL SALES:
+
+  const [totalSales, setTotalSales] = useState(0);
+
+  useEffect(() => {
+    const fetchTotalSales = async () => {
+      try {
+        const response = await fetch('/api/totalSales');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json(); // Ensure the response is JSON
+        setTotalSales(data.totalSales);
+      } catch (error) {
+        console.error('Error fetching total sales:', error);
+      }
+    };
+  
+    fetchTotalSales();
+  }, []);
+
+  SALES BY ITEMS:
+
+    const [sales, setSales] = useState([]);
+  const [error, setError] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+
+  useEffect(() => {
+    const fetchSalesByItems = async () => {
+      setError('');
+      try {
+
+        //TODO: use SetStartDate && setEndDate to set startDate endDate correctly
+
+        const response = await fetch('/api/salesByItems', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ startDate, endDate }),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setSales(data.sales);
+      } catch (error) {
+        console.error('Error fetching sales by items:', error);
+        setError('Failed to fetch sales data. Please try again.');
+      }
+    };
+
+    fetchSalesByItems();
+  }, []);
+
+xReport:
+
+  const [xReport, setXReport] = useState([]);
+
+  useEffect(() => {
+
+    const fetchXReport = async () => {
+      try {
+        const response = await fetch('/api/XReport');
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json(); // Ensure the response is JSON
+        setXReport(data.rows);
+        console.log('X Report Data:', data.rows); // Print out xReport data
+      } catch (error) {
+        console.error('Error fetching X report:', error);
+        setError(error.message);
+      }
+    };
+
+    fetchXReport();
+  }, []);
+
+  Same method apply to getTotalRetailSales, getTotalDinningDollarsSales, getTotalCashSales, getTotalUniqueCustomers
+  , 
+  JUST REPLACE         const response = await fetch('/api/<whatever query name you need to use>');
+

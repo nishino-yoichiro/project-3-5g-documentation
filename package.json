@@ -1,0 +1,30 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "generate-docs": "jsdoc -c ./generate-doc.json"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "cookies-next": "^5.0.2",
+    "dotenv": "^16.4.5",
+    "next": "^15.0.4",
+    "next-auth": "^4.24.11",
+    "pg": "^8.13.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "rsuite": "^5.74.2"
+  },
+  "devDependencies": {
+    "eslint": "^8",
+    "eslint-config-next": "15.0.2",
+    "jsdoc": "^4.0.4",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.14"
+  }
+}

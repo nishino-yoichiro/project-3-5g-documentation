@@ -1,0 +1,246 @@
+/*
+ NOTE: removed the '*' selector. Does not seem to work in module css files due to "CSS modules enforcing local scoping" and '*' 
+       selector considered a global selector. If errors occur in the future, maybe add * margin, padding : 0 to a global CSS file
+*/
+
+.root{
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(235, 7, 7, 0.247);
+}
+
+.itemWrapper{
+    display: flex;
+    flex-wrap: wrap;
+    height: 100%;
+    width: 75%;
+}
+
+.menuItemButtonsWrap{
+    /* border: 1px solid black; */
+    display: flex;
+    width: 100%;
+    height: 85%;
+}
+.menuBottomButtonsWrapper{
+    /* border: 1px solid black; */
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+    height: 15%;
+}
+.Panel{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+    align-content: flex-start;
+    gap: 30px;
+    height: 100%;
+    width: 100%;
+}
+.menuButtons{
+    cursor: pointer;
+    width: 10%;
+    height: 15%;
+    font-size: 15px;
+    border: 1px solid black;
+    border-radius: 10px;
+    background-color: rgba(187, 4, 4, 0.692);
+    box-shadow: 5px 5px 5px black;
+    margin: 30px 10px;
+} 
+.menuButtons:hover{
+    background-color: rgba(187, 4, 4, 0.9);
+    transform: scale(1.1);
+}
+.bottomButtons{
+    cursor: pointer;
+    min-width: 15%;
+    margin: 0rem 1rem;
+    height: 70%;
+    font-size: 20px;
+    border: 1px solid black;
+    background-color: rgba(187, 4, 4, 0.692);
+    box-shadow: 5px 5px 5px black;
+}
+.bottomButtons:hover{
+    background-color: rgba(187, 4, 4, 0.9);
+    transform: scale(1.1);
+}
+.cart{
+    display: flex;
+    /* flex-wrap: wrap; */
+    flex-direction: column;
+    width: 25%;
+    border: 2px solid black;
+    /* background-color: rgba(236, 234, 234, 0.841); */
+}
+.cartDeleteButton {
+  border: none;
+  color: black;
+  background-color: rgba(187, 4, 4, 0.692);
+  min-width: 2rem;
+  height: 2rem;
+  border-radius: 33%;
+  text-align: center;
+}
+.h2{
+    margin: 10px 20px 10px 20px;
+    width: auto;
+}
+.cartItems{
+    width: 100%;
+    height: 80%;
+    list-style-type: none;
+    /* border: 1px solid black; */
+}
+.cartItem{
+    display: flex;
+    justify-content: space-between;
+    margin: 10px;
+    /* border: 1px solid black; */
+}
+.cartTotal{
+    width: 100%;
+    height: 20%;
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+}
+.checkout{
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+    font-size: 30px;
+    background-color: rgba(187, 4, 4, 0.692);
+}
+.checkout:hover{
+    background-color: rgba(187, 4, 4, 0.9);
+}
+
+/* Checkout Panel Styles */
+.checkoutContainer {
+    min-width: 500px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+  }
+  
+  .checkoutContainer h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 1.5em;
+  }
+  
+  .checkoutContainer ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+  }
+  
+  .checkoutContainer ul h2 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #555;
+  }
+  
+  .checkoutContainer ul li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+  }
+  
+  .checkoutContainer ul li p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #333;
+  }
+  
+  .checkoutContainer ul li button {
+    background-color: #ff4d4f;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.8em;
+  }
+  
+  .checkoutContainer ul li button:hover {
+    background-color: #d63031;
+  }
+  
+  .totals {
+    font-size: 1em;
+    margin: 10px 0;
+    color: #333;
+  }
+  
+  .totals p {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+  }
+  
+  .formGroup {
+    margin: 15px 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .formGroup label {
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    color: #555;
+  }
+  
+  .formGroup input,
+  .formGroup select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 0.9em;
+  }
+  
+  .actionButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .actionButtons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    color: #fff;
+  }
+  
+  .actionButtons button:first-child {
+    background-color: #ff4d4f; /* Green for Pay */
+  }
+  
+  .actionButtons button:first-child:hover {
+    background-color: #d63031;
+  }
+  
+  .actionButtons button:last-child {
+    background-color: #ff4d4f; /* Blue for Back to Menu */
+  }
+  
+  .actionButtons button:last-child:hover {
+    background-color: #d63031;
+  }
+  

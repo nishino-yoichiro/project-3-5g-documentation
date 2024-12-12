@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: customer/payment/page.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: customer/payment/page.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>"use client";
+import React, { use, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import paymentStyles from "./Payment.module.css";
+import Modal from "../../reviews/Modal";
+import ReviewForm from "../../reviews/ReviewForm";
+import { set } from "rsuite/esm/internals/utils/date";
+import { useTTS } from '../../context/TTSContext';
+
+/**
+ * Payment component that handles the payment process and displays the selected items, total price, and tax.
+ * It also provides options for adjusting brightness and submitting a review.
+ * 
+ * @returns {JSX.Element} - The rendered Payment component.
+ */
+const Payment = () => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [selectedItems, setSelectedItems] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [tax, setTax] = useState(0);
+  const [totalPriceWithTax, setTotalPriceWithTax] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [ratings, setRatings] = useState({});
+  const [brightness, setBrightness] = useState(100); // Default brightness at 100%
+  const [customerEmail, setCustomerEmail] = useState("");
+  const [payMethod, setPayMethod] = useState("Card");
+  const [voices, setVoices] = useState([]);
+  const { isTTSEnabled } = useTTS(); // Use TTS context
+
+  useEffect(() => {
+    const itemsParam = searchParams.get("selectedItems");
+    if (itemsParam) {
+      try {
+        const items = JSON.parse(decodeURIComponent(itemsParam));
+        setSelectedItems(items);
+      } catch (error) {
+        console.error("Failed to parse selectedItems:", error);
+      }
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    const loadVoices = () => {
+        const voices = speechSynthesis.getVoices();
+        console.log('Loaded voices:', voices);
+        setVoices(voices);
+    };
+
+    loadVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchMenuItemsAndCalculateTotal = async () => {
+      console.log('Selected items:', selectedItems);
+      try {
+        const menuItemsResponse = await fetch('/api/data/menu_items', {
+          method: 'GET'
+        });
+        if (!menuItemsResponse.ok) {
+          throw new Error('Failed to fetch menu items');
+        }
+        const menuItems = await menuItemsResponse.json();
+
+        let calculatedTotalPrice = 0;
+        for (const item of selectedItems) {
+          if (item.mealType === 'Appetizers' || item.mealType === 'Desserts' || item.mealType === 'Drinks') {
+          } else if (item.mealType === 'A La Carte') {
+            const menuItem = menuItems.find(menuItem => menuItem.menu_name === "Carte");
+            if (!menuItem) {
+              throw new Error(`Menu item not found for ${item.mealType}`);
+            }
+            calculatedTotalPrice += menuItem.charge;
+          } else {
+            const menuItem = menuItems.find(menuItem => menuItem.menu_name === item.mealType);
+            if (!menuItem) {
+              throw new Error(`Menu item not found for ${item.mealType}`);
+            }
+            calculatedTotalPrice += menuItem.charge;
+          }
+            for (const side of item.sides) {
+              const sideItem = menuItems.find(menuItem => menuItem.menu_name === side.name);
+              if (!sideItem) {
+                throw new Error(`Menu item not found for ${side.name}`);
+              }
+              calculatedTotalPrice += sideItem.charge * side.count;
+            }
+
+            for (const entree of item.entrees) {
+              const entreeItem = menuItems.find(menuItem => menuItem.menu_name === entree.name);
+              if (!entreeItem) {
+                throw new Error(`Menu item not found for ${entree.name}`);
+              }
+              calculatedTotalPrice += entreeItem.charge * entree.count;
+            }
+
+            for (const otherItem of item.otherItems) {
+              const otherMenuItem = menuItems.find(menuItem => menuItem.menu_name === otherItem.name);
+              if (!otherMenuItem) {
+                throw new Error(`Menu item not found for ${otherItem.name}`);
+              }
+              calculatedTotalPrice += otherMenuItem.charge * otherItem.count;
+            }
+        }
+        setTotalPrice(calculatedTotalPrice);
+
+        const calculatedTax = calculatedTotalPrice * 0.07;
+        setTax(calculatedTax);
+
+        const calculatedTotalPriceWithTax = calculatedTotalPrice + calculatedTax;
+        setTotalPriceWithTax(calculatedTotalPriceWithTax);
+      } catch (error) {
+        console.error('Error calculating total price:', error);
+      }
+    };
+
+    fetchMenuItemsAndCalculateTotal();
+  }, [selectedItems]);
+
+  function speak(utterance) {
+      if (isTTSEnabled) {
+          if (voices.length > 0) {
+          utterance.voice = voices[0]; // Use the first available voice
+          }
+          speechSynthesis.speak(utterance);
+      } else {
+          console.log('TTS is disabled');
+      }
+  }
+
+  function getCurrentTimestamp() {
+    const now = new Date();
+    
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
+
+  const handleBack = () => {
+    router.push("/customer/order1");
+  };
+
+  const handleFinish = async () => {
+    try {
+      // Fetch all menu items
+      const menuItemsResponse = await fetch('/api/data/menu_items', {
+        method: 'GET'
+      });
+      if (!menuItemsResponse.ok) {
+        throw new Error('Failed to fetch menu items');
+      }
+      const menuItems = await menuItemsResponse.json();
+
+      // console.log("MENU ITEMS", menuItems);
+
+      const response1 = await fetch(`/api/data/customer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Customer_Email: customerEmail,
+          Pay_Method: payMethod,
+          Paid_Amt: totalPrice,
+        }),
+      });
+  
+      let customerId = null;
+      if (response1.ok) {
+        const data1 = await response1.json();
+        customerId = data1.customer_id;
+      } else {
+        throw new Error('Failed to create new customer');
+      }
+  
+      const timestamp = getCurrentTimestamp();
+      const response2 = await fetch('/api/data/order_history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          Customer_Id: customerId,
+          Date_Time: timestamp,
+          price: totalPrice,
+        }),
+      });
+  
+      let order_id = null;
+      if (response2.ok) {
+        const data2 = await response2.json();
+        order_id = data2.order_id;
+      } else {
+        throw new Error('Failed to create new order_history');
+      }
+  
+      // Traverse selectedItems and add to order_items
+      for (const item of selectedItems) {
+        console.log("ITEM", item);
+        //Add meal type
+        let mealType = item.mealType;
+        if (item.mealType === 'Appetizers' || item.mealType === 'Desserts' || item.mealType === 'Drinks') {
+        } else if(item.mealType === 'A La Carte') {
+          const menuItem = menuItems.find(menuItem => menuItem.menu_name === "Carte");
+          if (!menuItem) {
+            throw new Error(`Menu item not found for ${mealType}`);
+          }
+          const price = menuItem.charge;
+  
+          const response3 = await fetch('/api/data/order_items', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              Order_Id: order_id,
+              Order_Item: mealType,
+              Price: price
+            })
+          });
+  
+          if (!response3.ok) {
+            throw new Error('Failed to create new order_items');
+          }
+
+          // Update inventory
+          const menu_id = menuItem.menu_id;
+          const response4 = await fetch('/api/data/updateInventory?menu_id=' + menu_id);
+          if (!response4.ok) {
+            throw new Error('Failed to fetch inventory');
+          }
+          const inventoryData = await response4.json();
+          const inventoryIds = inventoryData.map(inventory => inventory.inventory_id);
+
+          for (const inventory of inventoryIds) {
+            const response5 = await fetch('/api/data/updateInventory', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                inventory_id: inventory,
+                amount: 2
+              })
+            });
+            if (!response5.ok) {
+              throw new Error('Failed to update inventory');
+            }
+            console.log(response5);
+          }
+        }
+        else{
+          const menuItem = menuItems.find(menuItem => menuItem.menu_name === mealType);
+          if (!menuItem) {
+            throw new Error(`Menu item not found for ${mealType}`);
+          }
+          const price = menuItem.charge;
+  
+          const response3 = await fetch('/api/data/order_items', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              Order_Id: order_id,
+              Order_Item: mealType,
+              Price: price
+            })
+          });
+  
+          if (!response3.ok) {
+            throw new Error('Failed to create new order_items');
+          }
+
+          // Update inventory
+          const menu_id = menuItem.menu_id;
+          const response4 = await fetch('/api/data/updateInventory?menu_id=' + menu_id);
+          if (!response4.ok) {
+            throw new Error('Failed to fetch inventory');
+          }
+          const inventoryData = await response4.json();
+          const inventoryIds = inventoryData.map(inventory => inventory.inventory_id);
+
+          for (const inventory of inventoryIds) {
+            const response5 = await fetch('/api/data/updateInventory', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                inventory_id: inventory,
+                amount: 2
+              })
+            });
+            if (!response5.ok) {
+              throw new Error('Failed to update inventory');
+            }
+            console.log(response5);
+          }
+        }
+
+        // Add sides
+        for (const side of item.sides) {
+          const menuItem = menuItems.find(menuItem => menuItem.menu_name === side.name);
+          if (!menuItem) {
+            throw new Error(`Menu item not found for ${side.name}`);
+          }
+          const price = menuItem.charge;
+  
+          const response3 = await fetch('/api/data/order_items', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              Order_Id: order_id,
+              Order_Item: side.name,
+              Price: price
+            })
+          });
+  
+          if (!response3.ok) {
+            throw new Error('Failed to create new order_items');
+          }
+
+          // Update inventory
+          const menu_id = menuItem.menu_id;
+          const response4 = await fetch('/api/data/updateInventory?menu_id=' + menu_id);
+          if (!response4.ok) {
+            throw new Error('Failed to fetch inventory');
+          }
+          const inventoryData = await response4.json();
+          const inventoryIds = inventoryData.map(inventory => inventory.inventory_id);
+
+          for (const inventory of inventoryIds) {
+            const response5 = await fetch('/api/data/updateInventory', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                inventory_id: inventory,
+                amount: 1
+              })
+            });
+            if (!response5.ok) {
+              throw new Error('Failed to update inventory');
+            }
+            console.log(response5);
+          }
+        }
+  
+        // Add entrees
+        for (const entree of item.entrees) {
+          const menuItem = menuItems.find(menuItem => menuItem.menu_name === entree.name);
+          if (!menuItem) {
+            throw new Error(`Menu item not found for ${entree.name}`);
+          }
+          const price = menuItem.charge;
+          console.log("PRICE", price);
+  
+          const response3 = await fetch('/api/data/order_items', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              Order_Id: order_id,
+              Order_Item: entree.name,
+              Price: price
+            })
+          });
+  
+          if (!response3.ok) {
+            throw new Error('Failed to create new order_items');
+          }
+
+          // Update inventory
+          const menu_id = menuItem.menu_id;
+          const response4 = await fetch('/api/data/updateInventory?menu_id=' + menu_id);
+          if (!response4.ok) {
+            throw new Error('Failed to fetch inventory');
+          }
+          const inventoryData = await response4.json();
+          const inventoryIds = inventoryData.map(inventory => inventory.inventory_id);
+
+          for (const inventory of inventoryIds) {
+            const response5 = await fetch('/api/data/updateInventory', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                inventory_id: inventory,
+                amount: 2
+              })
+            });
+            if (!response5.ok) {
+              throw new Error('Failed to update inventory');
+            }
+            console.log(response5);
+          }
+        }
+  
+        // Add other items
+        for (const otherItem of item.otherItems) {
+          const menuItem = menuItems.find(menuItem => menuItem.menu_name === otherItem.name);
+          if (!menuItem) {
+            throw new Error(`Menu item not found for ${otherItem.name}`);
+          }
+          const price = menuItem.charge;
+          console.log("PRICE", price);
+  
+          const response3 = await fetch('/api/data/order_items', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              Order_Id: order_id,
+              Order_Item: otherItem.name,
+              Price: price
+            })
+          });
+  
+          if (!response3.ok) {
+            throw new Error('Failed to create new order_items');
+          }
+
+          // Update inventory
+          const menu_id = menuItem.menu_id;
+          const response4 = await fetch('/api/data/updateInventory?menu_id=' + menu_id);
+          if (!response4.ok) {
+            throw new Error('Failed to fetch inventory');
+          }
+          const inventoryData = await response4.json();
+          const inventoryIds = inventoryData.map(inventory => inventory.inventory_id);
+
+          for (const inventory of inventoryIds) {
+            const response5 = await fetch('/api/data/updateInventory', {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                inventory_id: inventory,
+                amount: 1
+              })
+            });
+            if (!response5.ok) {
+              throw new Error('Failed to update inventory');
+            }
+            console.log(response5);
+          }
+        }
+      }
+  
+      console.log('Order items added successfully');
+      setIsModalOpen(true); // Open the modal to rate items
+    } catch (error) {
+      console.error('Error processing order:', error);
+    }
+  };
+
+  /**
+   * Handles the change event for the rating input.
+   * 
+   * @param {string} menuItemId - The ID of the menu item being rated.
+   * @param {number} rating - The rating value.
+   */
+  const handleRatingChange = (menuItemId, rating) => {
+    setRatings((prevRatings) => ({
+      ...prevRatings,
+      [menuItemId]: { ...prevRatings[menuItemId], rating },
+    }));
+  };
+
+    /**
+   * Handles the change event for the comment input.
+   * 
+   * @param {string} menuItemId - The ID of the menu item being commented on.
+   * @param {string} comment - The comment text.
+   */
+  const handleCommentChange = (menuItemId, comment) => {
+    setRatings((prevRatings) => ({
+      ...prevRatings,
+      [menuItemId]: { ...prevRatings[menuItemId], comment },
+    }));
+  };
+
+  /**
+   * Handles the submission of the ratings and comments.
+   */
+  const handleSubmitRatings = async () => {
+    try {
+      console.log(ratings);
+      const updatedRatings = await Promise.all(
+        Object.entries(ratings).map(async ([menuItemName, { rating, comment }]) => {
+          const response = await fetch(`/api/data/reviews?menuItemName=${encodeURIComponent(menuItemName)}`);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch menu item ID for ${menuItemName}`);
+          }
+          const { menu_id: menuItemId } = await response.json();
+          return { menuItemId, rating, comment };
+        })
+      );
+
+      await Promise.all(
+        updatedRatings.map(async ({ menuItemId, rating, comment }) => {
+          const response = await fetch('/api/data/reviews', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ menu_item_id: menuItemId, rating, comment }),
+          });
+          if (!response.ok) {
+            throw new Error('Failed to submit review');
+          }
+        })
+      );
+
+      console.log('Ratings submitted:', updatedRatings);
+      setIsModalOpen(false);
+      router.push('/');
+    } catch (error) {
+      console.error('Error submitting ratings:', error);
+    }
+  };
+
+    /**
+   * Handles the change event for the brightness slider.
+   * Sets the brightness state to the selected value.
+   * 
+   * @param {React.ChangeEvent&lt;HTMLInputElement>} event - The change event object.
+   */
+  const handleBrightnessChange = (event) => {
+    setBrightness(event.target.value);
+  };
+
+  const uniqueItems = [
+    ...selectedItems
+      .flatMap(item => [
+        ...(item.sides || []),
+        ...(item.entrees || []),
+        ...(item.otherItems || []),
+      ])
+      .reduce((map, current) => {
+        if (!map.has(current.name)) {
+          map.set(current.name, current);
+        }
+        return map;
+      }, new Map())
+      .values()
+  ];
+
+  return (
+    &lt;div
+      style={{
+        filter: `brightness(${brightness}%)`,
+        transition: "filter 0.2s ease-in-out",
+      }}
+    >
+      &lt;div className={paymentStyles.pageWrapper}>
+        &lt;div className={paymentStyles.paymentContainer}>
+          &lt;div className={paymentStyles.paymentForm}>
+            &lt;h2>Payment Information&lt;/h2>
+            &lt;form>
+              &lt;div className={paymentStyles.formGroup}>
+                &lt;label htmlFor="customerEmail">Email&lt;/label>
+                &lt;input
+                  type="email"
+                  id="customerEmail"
+                  name="customerEmail"
+                  value={customerEmail}
+                  onChange={(e) => setCustomerEmail(e.target.value)}
+                  onMouseDown={() => speak(new SpeechSynthesisUtterance("Enter Your Email"))}
+                  required
+                />
+              &lt;/div>
+              &lt;label htmlFor="payMethod">Payment Method&lt;/label> 
+              &lt;select 
+                id="payMethod"
+                value={payMethod}
+                name="payMethod"
+                onChange={(e) => setPayMethod(e.target.value)}
+                // onSelect={speak(new SpeechSynthesisUtterance(payMethod))} 
+                required
+                >
+                    &lt;option value="Card">Card&lt;/option>
+                    &lt;option value="Dinning Dollars">Dining Dollars&lt;/option>
+                    &lt;option value="Retail Swipe">Retail Swipe&lt;/option>
+                    &lt;option value="Cash">Cash&lt;/option>
+              &lt;/select>
+              {/* &lt;div className={paymentStyles.formGroup}>
+                &lt;label htmlFor="paidAmt">Amount Paid&lt;/label>
+                &lt;input
+                  type="number"
+                  id="paidAmt"
+                  name="paidAmt"
+                  value={paidAmt}
+                  onChange={(e) => setPaidAmt(e.target.value)}
+                  required
+                />
+              &lt;/div> */}
+            &lt;/form>
+          &lt;/div>
+          &lt;div className={paymentStyles.checkoutSummary}>
+            &lt;div>
+              &lt;h2>Order Summary&lt;/h2>
+            &lt;/div>
+            &lt;ul className={paymentStyles.checkoutItems}>
+              {selectedItems.map((item, index) => (
+                &lt;li key={index} className={paymentStyles.checkoutItem}>
+                  &lt;div>{item.mealType}&lt;/div>
+                  {item.sides.map((side, sideIndex) => (
+                    &lt;div key={`side-${sideIndex}`}>
+                      {side.name} (x{side.count})
+                    &lt;/div>
+                  ))}
+                  {item.entrees.map((entree, entreeIndex) => (
+                    &lt;div key={`entree-${entreeIndex}`}>
+                      {entree.name} (x{entree.count})
+                    &lt;/div>
+                  ))}
+                  {item.otherItems.map((otherItem, otherItemIndex) => (
+                    &lt;div key={`otherItem-${otherItemIndex}`}>
+                      {otherItem.name} (x{otherItem.count})
+                    &lt;/div>
+                  ))}
+                  &lt;strong>Tax: ${tax.toFixed(2)}&lt;/strong>
+                &lt;/li>
+              ))}
+            &lt;/ul>
+            &lt;div className={paymentStyles.totalPrice}>
+              &lt;strong>Total Price: ${totalPriceWithTax.toFixed(2)}&lt;/strong>
+            &lt;/div>
+          &lt;/div>
+        &lt;/div>
+        &lt;div className={paymentStyles.buttonsContainer}>
+          &lt;div className={paymentStyles.brightnessSliderContainer}>
+            &lt;label htmlFor="brightnessSlider">Adjust Brightness:&lt;/label>
+            &lt;input
+              type="range"
+              id="brightnessSlider"
+              className={paymentStyles.brightnessSlider}
+              min="50"
+              max="150"
+              value={brightness}
+              onChange={handleBrightnessChange}
+            />
+          &lt;/div>
+          &lt;button className={paymentStyles.backButton} onClick={handleBack} onMouseEnter={() => speak(new SpeechSynthesisUtterance("Back"))}>
+            Back
+          &lt;/button>
+          &lt;button className={paymentStyles.finishButton} onClick={handleFinish} onMouseEnter={() => speak(new SpeechSynthesisUtterance("Finish"))}>
+            Finish
+          &lt;/button>
+        &lt;/div>
+        &lt;Modal className={paymentStyles.modal} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+          &lt;h2>Rate Your Items&lt;/h2>
+          &lt;ul className={paymentStyles.reviewList}>
+            {uniqueItems.map((item, index) => (
+            &lt;li key={index} className={paymentStyles.reviewItem}>
+              &lt;ReviewForm
+                menuItemName={item.name}
+                onRatingChange={handleRatingChange}
+                onCommentChange={handleCommentChange}
+              />
+            &lt;/li>
+            ))}
+          &lt;/ul>
+          &lt;button className={paymentStyles.button} onClick={handleSubmitRatings}>Submit Ratings&lt;/button>
+        &lt;/Modal>
+      &lt;/div>
+    &lt;/div>
+  );
+};
+
+export default Payment;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#CashierView">CashierView</a></li><li><a href="global.html#Checkout">Checkout</a></li><li><a href="global.html#DELETE">DELETE</a></li><li><a href="global.html#EmployeeView">EmployeeView</a></li><li><a href="global.html#GET">GET</a></li><li><a href="global.html#GoogleTranslate">GoogleTranslate</a></li><li><a href="global.html#InventoryView">InventoryView</a></li><li><a href="global.html#Items">Items</a></li><li><a href="global.html#LandingPage">LandingPage</a></li><li><a href="global.html#Manager">Manager</a></li><li><a href="global.html#MealSelection">MealSelection</a></li><li><a href="global.html#MenuBoard">MenuBoard</a></li><li><a href="global.html#MenuView">MenuView</a></li><li><a href="global.html#Modal">Modal</a></li><li><a href="global.html#NavBar">NavBar</a></li><li><a href="global.html#Navbar">Navbar</a></li><li><a href="global.html#NutritionalInfo">NutritionalInfo</a></li><li><a href="global.html#POST">POST</a></li><li><a href="global.html#PUT">PUT</a></li><li><a href="global.html#Payment">Payment</a></li><li><a href="global.html#ReportView">ReportView</a></li><li><a href="global.html#ReviewForm">ReviewForm</a></li><li><a href="global.html#SelectedItemsProvider">SelectedItemsProvider</a></li><li><a href="global.html#TTSProvider">TTSProvider</a></li><li><a href="global.html#WeatherComponent">WeatherComponent</a></li><li><a href="global.html#WeatherToday">WeatherToday</a></li><li><a href="global.html#handler">handler</a></li><li><a href="global.html#languages">languages</a></li><li><a href="global.html#useSelectedItems">useSelectedItems</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Dec 11 2024 18:12:26 GMT-0600 (Central Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
